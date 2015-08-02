@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use Doctrine\ORM\EntityNotFoundException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -28,12 +30,27 @@ class PostController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-
+        $aDataToJson = array();
         $entities = $em->getRepository('AppBundle:Post')->findAll();
 
-        return array(
-            'entities' => $entities,
-        );
+        if ($entities) {
+            //throw new EntityNotFoundException("Les billets n'ont pas pu etre chargés depuis la base");
+            $iStatusCode = 404;
+            $aDataToJson['status'] = 'error';
+            $aDataToJson['message'] = "Les billets n'ont pas été trouvé dans la base";
+        }
+        else {
+            $iStatusCode = 200;
+            $aDataToJson['status'] = 'ok';
+            foreach ($entities as $entitie) {
+                $aDataToJson[] = $entitie->spawnInArray();
+            }
+        }
+
+        $oResponse = new JsonResponse();
+        $oResponse->setStatusCode($iStatusCode);
+        $oResponse->setData($aDataToJson);
+        return $oResponse;
     }
     /**
      * Creates a new Post entity.

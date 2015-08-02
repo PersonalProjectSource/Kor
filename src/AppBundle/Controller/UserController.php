@@ -100,8 +100,6 @@ class UserController extends Controller
         return $form;
     }
 
-
-
     /**
      * Finds and displays a User entity.
      *
@@ -256,13 +254,15 @@ class UserController extends Controller
      * Displays a form to edit an existing User entity.
      *
      * @Route("/ask/access", name="log_access")
-     * @Method("GET")
+     * @Method("POST")
      */
-    public function authentificationAction($iId)
+    public function authentificationAction()
     {
+
+        // TODO continuer l'identification de base avant de passer sur FOSUser.
         $oEm = $this->getDoctrine()->getManager();
 
-        $oUser = $oEm->getRepository('AppBundle:User')->find($iId);
+        $oUser = $oEm->getRepository('AppBundle:User')->find();
 
         if (!$oUser) {
             throw $this->createNotFoundException('Unable to find User entity.');
@@ -271,9 +271,8 @@ class UserController extends Controller
         $this->convertObjectToArray($oUser);
         die ('testisdone');
 
-
         $oReponse = new JsonResponse();
-        $oReponse->setData();
+        $oReponse->setData($aDataToResponse);
 
         return $oReponse;
     }
