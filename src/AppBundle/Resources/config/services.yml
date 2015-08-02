@@ -1,0 +1,3 @@
+services:
+    user.authentification:
+        class: AppBundle\Services\UserAuthentificationService
